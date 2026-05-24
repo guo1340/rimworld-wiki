@@ -12,46 +12,17 @@
   const pagesIn = (id) => D.pages.filter((p) => p.category === id);
   const page = (cat, id) => D.pages.find((p) => p.category === cat && p.id === id);
   const route = () => (location.pathname.replace(/\/$/, '') || '/').replace('/index.html', '/');
-
-  const icons = {
-    rocket: 'M52 14c18 8 28 24 30 48L62 82 48 68 34 54zM30 58l-12 8 16 4M44 72l-8 12-4-16',
-    pawn: 'M50 18a16 16 0 110 32 16 16 0 010-32zM22 84c8-22 48-22 56 0',
-    base: 'M16 76V36l34-20 34 20v40zM32 76V52h36v24M26 38h48',
-    crosshair: 'M50 16v18M50 66v18M16 50h18M66 50h18M50 30a20 20 0 100 40 20 20 0 000-40z',
-    beaker: 'M36 16h28M44 16v24L26 76c-3 6 1 10 8 10h32c7 0 11-4 8-10L56 40V16',
-    bolt: 'M58 12L28 54h22l-8 34 30-46H50z',
-    leaf: 'M80 20C48 20 24 40 24 70c28 2 52-16 56-50zM24 70c18-14 32-24 56-50',
-    medkit: 'M20 32h60v48H20zM38 32v-12h24v12M50 44v24M38 56h24',
-    globe: 'M50 14a36 36 0 100 72 36 36 0 000-72zM14 50h72M50 14c12 13 12 59 0 72M50 14c-12 13-12 59 0 72',
-    flag: 'M26 84V18h48l-8 18 8 18H26',
-    signal: 'M20 70a42 42 0 0160 0M32 58a25 25 0 0136 0M46 72h8',
-    stars: 'M50 14l8 24 24 8-24 8-8 24-8-24-24-8 24-8z',
-    gear: 'M50 20l8 9 12-2 4 12-9 8 3 13-11 7-8-9-10 9-11-7 3-13-9-8 4-12 12 2z',
-    book: 'M22 18h40c9 0 16 7 16 16v48H34c-7 0-12-5-12-12zM34 18v64',
-    radio: 'M18 38h64v40H18zM34 58h12M56 52h16M56 64h16M62 38l14-18'
-  };
-  const icon = (name) => `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${icons[name] || icons.base}" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const priority = ['Manual', '1', '2', '3', '4'];
 
   function adSlot(kind) {
     const banner = kind === 'banner';
-    return `<aside class="ad-slot ad-${esc(kind)}" aria-label="Advertisement"><span class="ad-label">Advertisement</span><ins class="adsbygoogle" style="display:block;${banner ? 'width:100%;height:90px;' : ''}" data-ad-client="ca-pub-1319817671788428" data-ad-slot="6141169453" ${banner ? '' : 'data-ad-format="auto"'} data-full-width-responsive="true"></ins></aside>`;
+    return `<aside class="ad-slot ad-${esc(kind)}" aria-label="Advertisement"><span class="ad-label">Trade Beacon</span><ins class="adsbygoogle" style="display:block;${banner ? 'width:100%;height:90px;' : ''}" data-ad-client="ca-pub-1319817671788428" data-ad-slot="6141169453" ${banner ? '' : 'data-ad-format="auto"'} data-full-width-responsive="true"></ins></aside>`;
   }
   function loadAds() {
     if (!window.adsbygoogle) return;
     document.querySelectorAll('.adsbygoogle:not([data-adsbygoogle-status])').forEach(() => {
       try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
     });
-  }
-  function sourceNotes(entity) {
-    const list = (entity && entity.sources || ['communityWiki', 'officialSite']).map((k) => D.sourceRegistry[k]).filter(Boolean);
-    return `<aside class="source-notes"><div class="src-head">Sources &amp; Update Notes</div><div class="src-meta"><span><strong>Last updated:</strong> ${esc(D.site.lastUpdated)}</span><span><strong>Build focus:</strong> ${esc(D.site.buildStatus)}</span></div><ul>${list.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.label)}</a> - ${esc(s.note)}</li>`).join('')}</ul><p>Exact values, DLC interactions and modded behavior can change by version and load order. Verify details before committing a colony plan.</p></aside>`;
-  }
-  function relatedBlock(p) {
-    if (!p.related || !p.related.length) return '';
-    return `<nav class="related" aria-label="Related pages"><h3>Related Pages</h3><div class="related-grid">${p.related.map((r) => `<a href="${esc(r.href)}">${esc(r.label)}</a>`).join('')}</div></nav>`;
-  }
-  function sectionsHTML(sections) {
-    return sections.map((s) => `<section class="article-section"><h3>${esc(s.h)}</h3>${s.body || ''}${s.list ? `<ul>${s.list.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}</section>`).join('');
   }
   function setMeta(attr, key, value) {
     let el = document.head.querySelector(`meta[${attr}="${key}"]`);
@@ -93,40 +64,54 @@
     ld.textContent = JSON.stringify(window.WikiMeta.jsonLdFor(r));
   }
 
+  function sourceNotes(entity) {
+    const list = (entity && entity.sources || ['communityWiki', 'officialSite']).map((k) => D.sourceRegistry[k]).filter(Boolean);
+    return `<aside class="source-notes"><b>Archive sources</b><div class="src-meta"><span>Updated ${esc(D.site.lastUpdated)}</span><span>${esc(D.site.buildStatus)}</span></div><ul>${list.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.label)}</a> - ${esc(s.note)}</li>`).join('')}</ul></aside>`;
+  }
+  function sectionsHTML(sections) {
+    return sections.map((s, i) => `<section class="colony-section"><h3><span>${String(i + 1).padStart(2, '0')}</span>${esc(s.h)}</h3>${s.body || ''}${s.list ? `<div class="task-grid">${s.list.map((x, n) => `<div><b>${priority[(n + i) % priority.length]}</b>${esc(x)}</div>`).join('')}</div>` : ''}</section>`).join('');
+  }
+  function relatedBlock(p) {
+    return `<div class="related-orders">${(p.related || []).map((r) => `<a href="${esc(r.href)}">${esc(r.label)}</a>`).join('')}</div>`;
+  }
+
   function renderLeftNav(active) {
-    leftNav.innerHTML = `<h3>Colony Sections</h3><ul>${D.categories.map((c) => `<li><a href="/${esc(c.id)}" data-r="/${esc(c.id)}">${esc(c.title)}</a></li>`).join('')}</ul><h3>Site Info</h3><ul><li><a href="/about" data-r="/about">About</a></li><li><a href="/privacy-policy" data-r="/privacy-policy">Privacy Policy</a></li><li><a href="/contact" data-r="/contact">Contact</a></li></ul>${adSlot('half-page')}`;
+    leftNav.innerHTML = `<div class="panel-title">Architect Menu</div>${D.categories.map((c, i) => `<a class="architect-row" href="/${esc(c.id)}" data-r="/${esc(c.id)}"><span>${String(i + 1).padStart(2, '0')}</span><b>${esc(c.title)}</b></a>`).join('')}<div class="panel-title compact">Comms</div><a class="architect-row" href="/about" data-r="/about"><b>About</b></a><a class="architect-row" href="/privacy-policy" data-r="/privacy-policy"><b>Privacy</b></a><a class="architect-row" href="/contact" data-r="/contact"><b>Contact</b></a>${adSlot('half-page')}`;
     leftNav.querySelectorAll('a').forEach((a) => {
       const r = a.getAttribute('data-r');
-      if (active === r || (r !== '/' && active.startsWith(r + '/'))) a.classList.add('active');
+      if (r && (active === r || active.startsWith(r + '/'))) a.classList.add('active');
     });
   }
   function renderRightNav() {
     const tip = D.tips[Math.floor(Math.random() * D.tips.length)];
-    rightNav.innerHTML = `<h3>Popular Pages</h3><ul><li><a href="/getting-started/beginner-guide">Beginner Guide</a></li><li><a href="/base-building/freezer-design">Freezer Design</a></li><li><a href="/base-building/killboxes">Killbox Guide</a></li><li><a href="/getting-started/wealth-management">Wealth Management</a></li><li><a href="/combat/weapon-tier-list">Weapon Tier List</a></li><li><a href="/dlc/best-dlc-purchase-order">Best DLC Order</a></li><li><a href="/mods/best-mods">Best Mods</a></li></ul><h3>Colony Note</h3><p class="colony-note">${esc(tip)}</p>${adSlot('rectangle')}`;
+    rightNav.innerHTML = `<div class="panel-title">Alerts</div><div class="alert-card red">Major threat: raid scaling follows colony wealth.</div><div class="alert-card orange">Low food: freezer planning recommended.</div><div class="alert-card blue">Medical: sterile hospital improves outcomes.</div><div class="panel-title compact">Popular Orders</div><a href="/getting-started/beginner-guide">Beginner Guide</a><a href="/base-building/freezer-design">Freezer Design</a><a href="/base-building/killboxes">Killbox Guide</a><a href="/getting-started/wealth-management">Wealth Management</a><a href="/dlc/best-dlc-purchase-order">Best DLC Order</a><div class="storyteller-note"><span>Storyteller Memo</span><p>${esc(tip)}</p></div>${adSlot('rectangle')}`;
+  }
+  function pawnStrip() {
+    const pawns = ['Cook', 'Builder', 'Doctor', 'Shooter', 'Grower', 'Crafter'];
+    return `<div class="pawn-strip">${pawns.map((p, i) => `<div class="pawn"><span>${p.slice(0, 2).toUpperCase()}</span><b>${esc(p)}</b><small>${['OK', 'Tired', 'Armed', 'Idle', 'Growing', 'Craft'][i]}</small></div>`).join('')}</div>`;
   }
   function renderHome() {
     const featured = ['beginner-guide', 'first-week-survival', 'freezer-design', 'killboxes', 'wealth-management', 'best-dlc-purchase-order', 'best-mods'].map((id) => D.pages.find((p) => p.id === id)).filter(Boolean);
-    main.innerHTML = `<section class="hero"><img src="/assets/images/hero/homepage-hero.svg" alt="RimWorld frontier colony survival banner" /><div class="hero-content"><span class="hero-kicker">Tactical colony survival handbook</span><h1>The Ultimate RimWorld Colony Survival Wiki</h1><p>Colonists, combat, research, raids, power grids, mods, biomes, DLC systems and advanced survival strategies for the sci-fi colony simulator.</p><div class="hero-buttons"><a class="btn" href="/getting-started/beginner-guide">Start Learning</a><a class="btn" href="/getting-started">Beginner Guide</a><a class="btn" href="/dlc">DLC Guide</a><a class="btn" href="/mods/best-mods">Best Mods</a></div></div></section>${adSlot('banner')}<h2 class="section-head">Featured Categories</h2><div class="cards cat-cards">${D.categories.map((c) => `<a class="card cat-card" href="/${esc(c.id)}"><span class="ico">${icon(c.icon)}</span><h4>${esc(c.title)}</h4><p>${esc(c.summary)}</p><div class="tags"><span>Colony</span><span>${esc(c.title.split(' ')[0])}</span></div></a>`).join('')}</div><div class="home-grid"><section class="page"><h2>Beginner Essentials</h2><div class="breadcrumb">Stabilize before the storyteller gets ideas.</div><ul class="link-list">${featured.map((p) => `<li><a href="/${esc(p.category)}/${esc(p.id)}">${esc(p.title)}<span>${esc(p.summary)}</span></a></li>`).join('')}</ul></section><section class="page"><h2>Colony Survival Loop</h2><div class="breadcrumb">The practical order of operations.</div><ol><li>Secure food, shelter and a freezer.</li><li>Build bedrooms and recreation before mood collapses.</li><li>Research batteries, defenses and medical upgrades.</li><li>Control wealth until defenses catch up.</li><li>Prepare answers for sappers, drop pods, mechs and disease.</li></ol></section></div>${adSlot('in-article')}`;
+    main.innerHTML = `<section class="colony-hero"><img src="/assets/images/hero/homepage-hero.svg" alt="RimWorld colony command map" /><div class="colony-overlay">${pawnStrip()}<div class="hero-terminal"><span class="kicker">Crashlanded command archive</span><h1>The Ultimate RimWorld Colony Survival Wiki</h1><p>Colonists, raids, research, power grids, biomes, DLC systems, mods and survival strategies for a colony where every bad decision becomes a story.</p><div class="hero-actions"><a href="/getting-started/beginner-guide">Start Learning</a><a href="/base-building/freezer-design">Freezer Design</a><a href="/combat/raid-types">Raid Types</a><a href="/mods/best-mods">Best Mods</a></div></div></div></section>${adSlot('banner')}<section class="resource-bar"><div><b>Meals</b><span>42</span></div><div><b>Medicine</b><span>18</span></div><div><b>Steel</b><span>312</span></div><div><b>Components</b><span>27</span></div><div><b>Threat</b><span>Rising</span></div></section><section class="colony-layout"><div class="blueprint-grid">${D.categories.map((c, i) => `<a class="blueprint-card" href="/${esc(c.id)}"><span class="room-code">${String.fromCharCode(65 + (i % 26))}-${String(i + 1).padStart(2, '0')}</span><h3>${esc(c.title)}</h3><p>${esc(c.summary)}</p><small>${i % 3 === 0 ? 'Critical' : i % 3 === 1 ? 'Useful' : 'Expansion'}</small></a>`).join('')}</div><aside class="quick-panel"><div class="panel-title">Beginner Essentials</div>${featured.map((p) => `<a class="order-link" href="/${esc(p.category)}/${esc(p.id)}"><b>${esc(p.title)}</b><span>${esc(p.summary)}</span></a>`).join('')}</aside></section>${adSlot('in-article')}`;
   }
   function renderCategory(id) {
     const c = category(id);
     if (!c) return render404(id);
-    const pages = pagesIn(id);
-    main.innerHTML = `${adSlot('banner')}<section class="page"><h1>${esc(c.title)}</h1><div class="breadcrumb">Home / ${esc(c.title)}</div><p class="lead">${esc(c.summary)}</p><div class="cards">${pages.map((p) => `<a class="card" href="/${esc(p.category)}/${esc(p.id)}"><h4>${esc(p.title)}</h4><p>${esc(p.summary)}</p></a>`).join('')}</div></section>${adSlot('in-article')}`;
+    main.innerHTML = `${adSlot('banner')}<section class="category-command"><span class="kicker">Architect tab</span><h1>${esc(c.title)}</h1><p>${esc(c.summary)}</p></section><section class="blueprint-grid wide">${pagesIn(id).map((p, i) => `<a class="blueprint-card" href="/${esc(p.category)}/${esc(p.id)}"><span class="room-code">${esc(c.title.slice(0, 2).toUpperCase())}-${String(i + 1).padStart(2, '0')}</span><h3>${esc(p.title)}</h3><p>${esc(p.summary)}</p><small>${esc(p.facts.slice(0, 2).join(' / '))}</small></a>`).join('')}</section>${adSlot('in-article')}`;
   }
   function renderDetail(cat, id) {
     const c = category(cat);
     const p = page(cat, id);
     if (!c || !p) return render404(cat + '/' + id);
-    main.innerHTML = `${adSlot('banner')}<article class="page article"><div class="breadcrumb"><a href="/${esc(c.id)}">${esc(c.title)}</a> / ${esc(p.title)}</div><h1>${esc(p.title)}</h1><p class="lead">${esc(p.summary)}</p><div class="info-grid"><div>${sectionsHTML(p.sections)}${relatedBlock(p)}${sourceNotes(p)}</div><aside class="infobox"><div class="infobox-head">Quick Facts</div><dl>${p.facts.map((x, i) => `<dt>${String(i + 1).padStart(2, '0')}</dt><dd>${esc(x)}</dd>`).join('')}</dl></aside></div></article>${adSlot('in-article')}`;
+    main.innerHTML = `${adSlot('banner')}<article class="colony-page"><header class="page-command"><div><div class="breadcrumb"><a href="/${esc(c.id)}">${esc(c.title)}</a> / ${esc(p.title)}</div><h1>${esc(p.title)}</h1><p>${esc(p.summary)}</p></div><aside class="work-priority"><b>Quick Facts</b>${p.facts.map((x, i) => `<div><span>${priority[i % priority.length]}</span>${esc(x)}</div>`).join('')}</aside></header><div class="article-layout"><div>${sectionsHTML(p.sections)}${relatedBlock(p)}${sourceNotes(p)}</div><aside class="inspection-panel"><b>Inspection</b><a href="/${esc(c.id)}">Category: ${esc(c.title)}</a>${p.facts.map((f) => `<a href="/${esc(c.id)}">${esc(f)}</a>`).join('')}</aside></div></article>${adSlot('in-article')}`;
   }
   function renderInfo(slug) {
     const p = D.infoPages[slug];
     if (!p) return render404(slug);
-    main.innerHTML = `${adSlot('banner')}<section class="page legal-page"><h1>${esc(p.title)}</h1><div class="breadcrumb">Home / ${esc(p.title)}</div>${p.body}${sourceNotes(null)}</section>`;
+    main.innerHTML = `${adSlot('banner')}<article class="colony-page"><header class="page-command"><div><div class="breadcrumb">Comms / ${esc(p.title)}</div><h1>${esc(p.title)}</h1></div></header><div class="article-layout"><section class="colony-section">${p.body}</section><aside class="inspection-panel"><b>Site Files</b><a href="/about">About</a><a href="/privacy-policy">Privacy Policy</a><a href="/contact">Contact</a></aside></div>${sourceNotes(null)}</article>`;
   }
   function render404(slug) {
-    main.innerHTML = `<section class="page"><h1>Colony Record Missing</h1><p>No archive entry found for <code>${esc(slug)}</code>.</p><p><a href="/">Return to colony command</a></p></section>`;
+    main.innerHTML = `<section class="colony-page"><header class="page-command"><div><h1>Colony Record Missing</h1><p>No archive entry found for <code>${esc(slug)}</code>.</p><p><a href="/">Return to colony command</a></p></div></header></section>`;
   }
   function navigate() {
     const r = route();
@@ -150,9 +135,9 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   const searchIndex = [
-    ...D.categories.map((c) => ({ title: c.title, sub: 'Category', href: '/' + c.id })),
+    ...D.categories.map((c) => ({ title: c.title, sub: 'Architect Tab', href: '/' + c.id, tags: c.summary })),
     ...D.pages.map((p) => ({ title: p.title, sub: category(p.category).title, href: '/' + p.category + '/' + p.id, tags: p.facts.join(' ') })),
-    ...Object.entries(D.infoPages).map(([k, p]) => ({ title: p.title, sub: 'Site Info', href: '/' + k }))
+    ...Object.entries(D.infoPages).map(([k, p]) => ({ title: p.title, sub: 'Comms', href: '/' + k, tags: p.body }))
   ];
   function runSearch(q) {
     if (!q) {
@@ -160,7 +145,7 @@
       return;
     }
     const low = q.toLowerCase();
-    const matches = searchIndex.filter((x) => (x.title + ' ' + x.sub + ' ' + (x.tags || '')).toLowerCase().includes(low)).slice(0, 12);
+    const matches = searchIndex.filter((x) => (x.title + ' ' + x.sub + ' ' + x.tags).toLowerCase().includes(low)).slice(0, 12);
     searchResults.innerHTML = matches.length ? matches.map((m) => `<a href="${esc(m.href)}">${esc(m.title)}<span>${esc(m.sub)}</span></a>`).join('') : '<div class="empty">No colony records match.</div>';
     searchResults.classList.add('open');
   }

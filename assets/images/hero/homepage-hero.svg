@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="RimWorld frontier colony survival banner">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#202020"/>
+      <stop offset=".55" stop-color="#3a3027"/>
+      <stop offset="1" stop-color="#141414"/>
+    </linearGradient>
+    <linearGradient id="heat" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#c97b2b" stop-opacity=".1"/>
+      <stop offset=".5" stop-color="#c97b2b" stop-opacity=".38"/>
+      <stop offset="1" stop-color="#9e3d32" stop-opacity=".16"/>
+    </linearGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency=".68" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="table" tableValues="0 .18"/></feComponentTransfer>
+      <feBlend mode="multiply" in2="SourceGraphic"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <rect width="1600" height="900" fill="url(#heat)"/>
+  <circle cx="1230" cy="130" r="76" fill="#c97b2b" opacity=".32"/>
+  <path d="M0 520c230-90 390-78 570-36 220 52 410 12 610-54 170-56 285-34 420 26v444H0z" fill="#222222"/>
+  <path d="M0 682c280-74 520-66 770-18 300 58 570 24 830-50v286H0z" fill="#141414"/>
+  <g transform="translate(610 360)" stroke="#b79b68" stroke-width="8" fill="#222222">
+    <path d="M0 250V70l130-70 130 70v180z"/>
+    <path d="M42 250V118h176v132z" fill="#1b1b1b"/>
+    <path d="M72 154h116M72 194h116" stroke="#5e8fa3"/>
+    <path d="M112 250v-62h36v62" fill="#141414"/>
+  </g>
+  <g transform="translate(365 555)" fill="#222222" stroke="#c97b2b" stroke-width="7">
+    <rect x="0" y="40" width="170" height="110"/>
+    <path d="M0 40l85-44 85 44"/>
+    <rect x="24" y="74" width="48" height="34" fill="#141414"/>
+    <rect x="98" y="74" width="48" height="34" fill="#141414"/>
+  </g>
+  <g transform="translate(965 510)" fill="none" stroke="#5e8fa3" stroke-width="8" stroke-linecap="round">
+    <rect x="0" y="0" width="180" height="94" fill="#1b1b1b"/>
+    <path d="M28 28h124M28 58h92"/>
+    <path d="M34 94v60M146 94v60M10 154h160"/>
+  </g>
+  <g transform="translate(1170 625)" fill="none" stroke="#7a8c42" stroke-width="8" stroke-linecap="round">
+    <path d="M0 96h270"/>
+    <path d="M24 96V36h48v60M106 96V14h48v82M188 96V48h48v48"/>
+    <path d="M30 36h36M112 14h36M194 48h36"/>
+  </g>
+  <g opacity=".45" stroke="#8b8b8b" stroke-width="2">
+    <path d="M0 200h1600M0 400h1600M0 600h1600M0 800h1600"/>
+    <path d="M200 0v900M400 0v900M600 0v900M800 0v900M1000 0v900M1200 0v900M1400 0v900"/>
+  </g>
+  <g font-family="monospace" font-size="24" fill="#b79b68" opacity=".5">
+    <text x="78" y="118">COLONY STATUS: SURVIVING</text>
+    <text x="78" y="150">RAID INTENSITY: RISING</text>
+    <text x="1050" y="128">FREEZER ONLINE</text>
+    <text x="1050" y="160">MEDICAL STOCK LOW</text>
+  </g>
+  <g transform="translate(190 675)" fill="#9e3d32" opacity=".88">
+    <path d="M0 48c38-48 88-48 126 0-38 22-88 22-126 0z"/>
+    <circle cx="63" cy="42" r="12" fill="#c97b2b"/>
+  </g>
+  <rect width="1600" height="900" filter="url(#grain)" opacity=".55"/>
+</svg>

@@ -149,7 +149,7 @@
     navigate();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  const searchIndex = [
+  const searchIndex = Array.isArray(D.searchIndex) ? D.searchIndex : [
     ...D.categories.map((c) => ({ title: c.title, sub: 'Architect Tab', href: '/' + c.id, tags: c.summary })),
     ...D.pages.map((p) => ({ title: p.title, sub: category(p.category).title, href: '/' + p.category + '/' + p.id, tags: p.facts.join(' ') })),
     ...Object.entries(D.infoPages).map(([k, p]) => ({ title: p.title, sub: 'Comms', href: '/' + k, tags: p.body }))
@@ -176,6 +176,11 @@
     if (!href || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) return;
     const url = new URL(href, location.origin);
     if (url.origin !== location.origin) return;
+    if (!window.__GW_PRERENDER__) {
+      searchInput.value = '';
+      searchResults.classList.remove('open');
+      return;
+    }
     e.preventDefault();
     searchInput.value = '';
     searchResults.classList.remove('open');
@@ -188,7 +193,11 @@
     }
     if (e.key === 'Escape') searchResults.classList.remove('open');
   });
-  window.addEventListener('popstate', navigate);
+  window.addEventListener('popstate', () => { if (window.__GW_PRERENDER__) navigate(); });
   if (menuToggle) menuToggle.onclick = () => leftNav.classList.toggle('open');
-  navigate();
+  if (window.__GW_PRERENDER__) {
+    navigate();
+  } else {
+    setTimeout(loadAds, 100);
+  }
 })();

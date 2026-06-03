@@ -13,6 +13,7 @@
   const page = (cat, id) => D.pages.find((p) => p.category === cat && p.id === id);
   const route = () => (location.pathname.replace(/\/$/, '') || '/').replace('/index.html', '/');
   const priority = ['01', '02', '03', '04', '05'];
+  const firstLoadStarted = Date.now();
   const hrefFor = (href) => {
     if (!href || href === '/' || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) return href;
     return href.startsWith('/') && !/\.[a-z0-9]+$/i.test(href) ? href.replace(/\/?$/, '/') : href;
@@ -30,6 +31,15 @@
     document.querySelectorAll('.adsbygoogle:not([data-adsbygoogle-status])').forEach(() => {
       try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
     });
+  }
+  function revealMainContent() {
+    const body = document.body;
+    if (!body || !body.classList.contains('is-loading')) return;
+    const elapsed = Date.now() - firstLoadStarted;
+    const wait = Math.max(0, 280 - elapsed);
+    window.setTimeout(() => {
+      window.requestAnimationFrame ? window.requestAnimationFrame(() => body.classList.remove('is-loading')) : body.classList.remove('is-loading');
+    }, wait);
   }
   function setMeta(attr, key, value) {
     let el = document.head.querySelector(`meta[${attr}="${key}"]`);
@@ -136,6 +146,7 @@
     main.innerHTML = `<section class="colony-page"><header class="page-command"><div><h1>Colony Record Missing</h1><p>No archive entry found for <code>${esc(slug)}</code>.</p><p><a href="/">Return to colony command</a></p></div></header></section>`;
   }
   function navigate() {
+    if (document.body && window.__GW_PRERENDER__) document.body.classList.add('is-loading');
     const r = route();
     renderLeftNav(r);
     renderRightNav();
@@ -147,6 +158,7 @@
     else render404(r);
     applySeo(r);
     setTimeout(loadAds, 100);
+    revealMainContent();
   }
   function go(path) {
     const clean = path.replace(/\/$/, '') || '/';
@@ -206,5 +218,6 @@
     navigate();
   } else {
     setTimeout(loadAds, 100);
+    revealMainContent();
   }
 })();

@@ -126,6 +126,79 @@ nav.top a.network-link:hover { color: var(--orange); background: rgba(201,123,43
   grid-template-columns: 230px minmax(0, 1fr) 280px;
   gap: 16px;
 }
+#main {
+  position: relative;
+  min-height: 420px;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.main-loading-buffer {
+  display: none;
+  min-height: 420px;
+  place-items: center;
+  padding: 28px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+    rgba(24,23,21,.9);
+  background-size: 34px 34px, 34px 34px, auto;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--orange);
+}
+body.is-loading #main > :not(.main-loading-buffer) {
+  visibility: hidden;
+}
+body.is-loading .main-loading-buffer {
+  display: grid;
+}
+body:not(.is-loading) .main-loading-buffer {
+  display: none;
+}
+.loading-terminal {
+  width: min(520px, 100%);
+  padding: 20px;
+  background: rgba(17,17,17,.9);
+  border: 1px solid var(--line2);
+  box-shadow: 0 18px 42px rgba(0,0,0,.42);
+  text-align: left;
+}
+.loading-kicker {
+  display: block;
+  color: var(--orange);
+  font: 800 12px var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  margin-bottom: 8px;
+}
+.loading-terminal b {
+  display: block;
+  color: var(--text);
+  font: 800 28px/1 var(--font-head);
+  text-transform: uppercase;
+}
+.loading-terminal small {
+  display: block;
+  color: var(--muted);
+  margin-top: 10px;
+}
+.loading-bars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+  margin-top: 16px;
+}
+.loading-bars span {
+  height: 9px;
+  background: rgba(201,123,43,.16);
+  border: 1px solid rgba(201,123,43,.3);
+  animation: loadingPulse 1.2s ease-in-out infinite;
+}
+.loading-bars span:nth-child(2) { animation-delay: .12s; }
+.loading-bars span:nth-child(3) { animation-delay: .24s; }
+.loading-bars span:nth-child(4) { animation-delay: .36s; }
+@keyframes loadingPulse {
+  0%, 100% { background: rgba(201,123,43,.16); }
+  50% { background: rgba(215,176,77,.86); }
+}
 aside.left, aside.right {
   position: sticky;
   top: 80px;

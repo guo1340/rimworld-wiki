@@ -11,13 +11,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/css/style.css" />
+    <noscript><style>body.is-loading #main > :not(.main-loading-buffer){visibility:visible}.main-loading-buffer{display:none!important}</style></noscript>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23151515'/%3E%3Crect x='16' y='16' width='68' height='68' fill='%23282927' stroke='%23d07a2c' stroke-width='6'/%3E%3Cpath d='M28 42h44M42 28v44M28 58h44' stroke='%23c2a36d' stroke-width='5' stroke-linecap='square'/%3E%3Ccircle cx='50' cy='50' r='8' fill='%236d9ab0'/%3E%3C/svg%3E" />
   </head>
-  <body>
+  <body class="is-loading">
     {{header}}
     <div class="layout">
       {{sidebarLeft}}
       <main id="main">
+        <div class="main-loading-buffer" id="mainLoadingBuffer" role="status" aria-live="polite">
+          <div class="loading-terminal">
+            <span class="loading-kicker">Colony systems check</span>
+            <b>Loading RimWorld archive</b>
+            <div class="loading-bars" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+            <small>Architect menu online - storyteller feed syncing - records unpacking</small>
+          </div>
+        </div>
         <section class="colony-page">
           <header class="page-command">
             <div>

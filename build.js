@@ -2,6 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 const ROOT = __dirname;
+const TEMPLATE_DIR = path.join(ROOT, 'templates');
+const PARTIAL_DIR = path.join(ROOT, 'partials');
 
 function mkEl() {
   return {
@@ -67,7 +69,7 @@ function renderMain(route) {
   els.leftNav._html = '';
   els.rightNav._html = '';
   require('./js/app.js');
-  return els.main._html;
+  return { main: els.main._html, leftNav: els.leftNav._html, rightNav: els.rightNav._html };
 }
 function headBlock(route) {
   const seo = M.seoFor(route);
@@ -92,11 +94,24 @@ function buildPage(template, route) {
   let html = template;
   html = html.replace(/<!-- rww:head -->[\s\S]*?<!-- \/rww:head -->/, '<!-- rww:head -->\n' + headBlock(route) + '\n    <!-- /rww:head -->');
   html = html.replace(/<script type="application\/ld\+json" id="rww-jsonld">[\s\S]*?<\/script>/, '<script type="application/ld+json" id="rww-jsonld">' + JSON.stringify(M.jsonLdFor(route)) + '</script>');
-  const mainHtml = renderMain(route);
-  html = html.replace(/<aside class="left" id="leftNav">[\s\S]*?<\/aside>/, '<aside class="left" id="leftNav">' + els.leftNav._html + '</aside>');
-  html = html.replace(/<aside class="right" id="rightNav">[\s\S]*?<\/aside>/, '<aside class="right" id="rightNav">' + els.rightNav._html + '</aside>');
-  html = html.replace(/<main id="main">[\s\S]*?<\/main>/, '<main id="main">' + mainHtml + '</main>');
-  return normalizeInternalLinks(html);
+  return normalizeInternalLinks(applyChrome(html, renderMain(route)));
+}
+function buildStaticTemplate(template, chrome) {
+  return normalizeInternalLinks(applyChrome(template, chrome));
+}
+function readPartial(name) {
+  return fs.readFileSync(path.join(PARTIAL_DIR, name + '.html'), 'utf8');
+}
+function renderPartial(name, data) {
+  return readPartial(name).replace(/\{\{(\w+)\}\}/g, (_, key) => data[key] || '');
+}
+function applyChrome(html, chrome) {
+  return html
+    .replace('{{header}}', readPartial('header'))
+    .replace('{{footer}}', readPartial('footer'))
+    .replace('{{sidebarLeft}}', renderPartial('sidebar-left', chrome))
+    .replace('{{sidebarRight}}', renderPartial('sidebar-right', chrome))
+    .replace('{{main}}', chrome.main || '');
 }
 function normalizeInternalLinks(html) {
   return html.replace(/href="(\/[^"#?]*)"/g, (match, href) => {
@@ -121,13 +136,15 @@ function writeSitemap(allRoutes) {
   fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`, 'utf8');
 }
 function run() {
-  const template = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const template = fs.readFileSync(path.join(TEMPLATE_DIR, 'base.html'), 'utf8');
   const allRoutes = routes();
   allRoutes.forEach((route) => {
     const file = outPath(route);
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, buildPage(template, route), 'utf8');
   });
+  const notFoundTemplate = fs.readFileSync(path.join(TEMPLATE_DIR, '404.html'), 'utf8');
+  fs.writeFileSync(path.join(ROOT, '404.html'), buildStaticTemplate(notFoundTemplate, renderMain('/')), 'utf8');
   writeSitemap(allRoutes);
   console.log('Static prerender complete: ' + allRoutes.length + ' HTML files generated.');
 }

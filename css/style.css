@@ -94,6 +94,14 @@ header.site {
 nav.top { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 2px; }
 nav.top a { color: var(--muted); padding: 7px 8px; font: 800 14px var(--font-head); text-transform: uppercase; }
 nav.top a:hover { color: var(--orange); background: rgba(201,123,43,.08); text-decoration: none; }
+nav.top a.network-link {
+  margin-left: 8px;
+  color: var(--text);
+  border: 1px solid rgba(201,123,43,.32);
+  border-left: 3px solid var(--orange);
+  background: rgba(201,123,43,.08);
+}
+nav.top a.network-link:hover { color: var(--orange); background: rgba(201,123,43,.16); }
 .menu-toggle { display: none; background: var(--panel); border: 1px solid var(--line2); color: var(--text); padding: 8px 10px; font-weight: 800; }
 .status-bar {
   display: flex;

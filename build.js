@@ -96,7 +96,13 @@ function buildPage(template, route) {
   html = html.replace(/<aside class="left" id="leftNav">[\s\S]*?<\/aside>/, '<aside class="left" id="leftNav">' + els.leftNav._html + '</aside>');
   html = html.replace(/<aside class="right" id="rightNav">[\s\S]*?<\/aside>/, '<aside class="right" id="rightNav">' + els.rightNav._html + '</aside>');
   html = html.replace(/<main id="main">[\s\S]*?<\/main>/, '<main id="main">' + mainHtml + '</main>');
-  return html;
+  return normalizeInternalLinks(html);
+}
+function normalizeInternalLinks(html) {
+  return html.replace(/href="(\/[^"#?]*)"/g, (match, href) => {
+    if (href === '/' || /\.[a-z0-9]+$/i.test(href)) return match;
+    return `href="${href.replace(/\/?$/, '/')}"`;
+  });
 }
 function routes() {
   return ['/', '/about', '/privacy-policy', '/contact']
